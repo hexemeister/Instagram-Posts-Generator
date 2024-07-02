@@ -18,7 +18,7 @@ def place_logo(bkg, logo, trademark, font):
 
 	# calculate the size of the trademark text
 	draw = ImageDraw.Draw(bkg)
-	text_width, text_height = draw.textsize(trademark, font=font)
+	_,_,text_width, text_height = draw.textbbox((0,0),trademark, font=font)
 
 	# set a constant offset between the logo and the trademark text
 	spacing = 2
@@ -37,7 +37,7 @@ def place_trademark(im, trademark, font):
 	bbox =  im.getbbox()
 	W = bbox[2]
 	H = bbox[3]
-	text_width, text_height = draw.textsize(trademark, font=font)
+	_,_,text_width, text_height = draw.textbbox((0,0),trademark, font=font)
 	x = (W - text_width) / 2
 	y = 1010
 	draw.text((x, y), trademark, font=font)
@@ -46,7 +46,7 @@ def place_trademark(im, trademark, font):
 # places the quote in the centre of the image
 def place_quote(im, quote, font):
 	draw = ImageDraw.Draw(im)
-	w, h = draw.textsize(quote, font=font)
+	_,_,w, h = draw.textbbox((0,0),quote, font=font)
 	bbox =  im.getbbox()
 	W = bbox[2]; H = bbox[3]
 
@@ -58,7 +58,7 @@ def place_quote(im, quote, font):
  	# place the lines of the quotes one on top of the other
 	current_h = H/2 - (n_lines*h/2)
 	for line in lines:
-		w, h = draw.textsize(line, font=font)
+		_,_,w, h = draw.textbbox((0,0),line, font=font)
 		draw.text(((W - w) / 2, current_h), line, font=font)
 		current_h += h + pad
 
@@ -79,7 +79,7 @@ def get_im_paths(files):
 
 # reads the quotes from the quotes.txt file 
 def get_quotes(file):
-	with open(file) as f:
+	with open(file, 'r', encoding='utf-8') as f:
 		content = f.readlines()
 	return [x.strip() for x in content] 
 
@@ -110,8 +110,8 @@ def main():
 	im_paths = get_im_paths(dir_paths)
 	quotes = get_quotes("in/quotes.txt")
 
-	combos = (input("Generate all combinations? (y/n): ") == 'y')
-	logoify = (input("Include trademark/logo? (y/n): ") == 'y')
+	combos = (input("Generate all combinations? (Y/n): ") in ('y','Y', ''))
+	logoify = (input("Include trademark/logo? (Y/n): ") in ('y','Y', ''))
 
 	if combos:
 		im_count = 0
